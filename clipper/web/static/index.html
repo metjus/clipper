@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI clipper</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --line:#262b36; --text:#e8eaf0; --muted:#8b93a7; --accent:#ffe600; --accent2:#ff3b3b; --ok:#3ddc84; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--text); }
+  header { display:flex; align-items:center; justify-content:space-between; padding:14px 22px; border-bottom:1px solid var(--line); }
+  header h1 { font-size:18px; margin:0; letter-spacing:.3px; }
+  header h1 span { color:var(--accent); }
+  main { display:grid; grid-template-columns: 1fr 420px; gap:18px; padding:18px 22px; max-width:1400px; margin:0 auto; }
+  @media (max-width: 980px) { main { grid-template-columns: 1fr; } }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  h2 { font-size:14px; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); margin:0 0 12px; }
+  textarea, input, select { width:100%; background:#0c0e12; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:9px 10px; font: inherit; }
+  textarea { min-height:120px; resize:vertical; font-family: ui-monospace, Consolas, monospace; font-size:13px; }
+  label { display:block; font-size:12px; color:var(--muted); margin:10px 0 4px; }
+  .row { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+  .row3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
+  button { background:var(--accent); color:#111; border:0; border-radius:8px; padding:10px 16px; font-weight:700; cursor:pointer; font: inherit; font-weight:700; }
+  button.secondary { background:#242938; color:var(--text); }
+  button:disabled { opacity:.5; cursor:default; }
+  .actions { display:flex; gap:10px; margin-top:14px; align-items:center; flex-wrap:wrap; }
+  .bar { height:8px; background:#0c0e12; border-radius:6px; overflow:hidden; margin-top:10px; }
+  .bar i { display:block; height:100%; background:linear-gradient(90deg, var(--accent), #ff9f1c); width:0; transition:width .3s; }
+  .stage { font-size:12px; color:var(--muted); margin-top:6px; display:flex; justify-content:space-between; }
+  pre.log { background:#0c0e12; border:1px solid var(--line); border-radius:8px; padding:10px; font-size:12px; max-height:260px; overflow:auto; white-space:pre-wrap; color:#b9c0d1; margin:10px 0 0; }
+  .result { display:grid; grid-template-columns: 300px 1fr; gap:16px; }
+  @media (max-width: 700px) { .result { grid-template-columns: 1fr; } }
+  video { width:100%; aspect-ratio: 9/16; background:#000; border-radius:12px; }
+  .copybox { background:#0c0e12; border:1px solid var(--line); border-radius:8px; padding:10px; font-size:14px; white-space:pre-wrap; }
+  .tags span { display:inline-block; background:#242938; border-radius:6px; padding:3px 8px; margin:3px 4px 0 0; font-size:13px; }
+  .muted { color:var(--muted); font-size:13px; }
+  .pill { font-size:11px; padding:3px 8px; border-radius:20px; background:#242938; color:var(--muted); }
+  .pill.ok { background:#163a2a; color:var(--ok); }
+  .pill.bad { background:#3a1616; color:#ff8080; }
+  .clips { font-size:13px; }
+  .clips div { padding:6px 0; border-bottom:1px solid var(--line); }
+  dialog { background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:20px; width:min(560px, 92vw); }
+  dialog::backdrop { background:rgba(0,0,0,.6); }
+  details summary { cursor:pointer; color:var(--muted); font-size:13px; margin-top:10px; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>AI <span>clipper</span> <span class="muted" style="font-weight:400;font-size:12px;margin-left:8px">Twitch klipy → TikTok</span></h1>
+  <div style="display:flex;gap:10px;align-items:center">
+    <span id="pillKey" class="pill">Claude: …</span>
+    <span id="pillFf" class="pill">ffmpeg: …</span>
+    <button class="secondary" onclick="openSettings()">⚙ Nastavenia</button>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="panel">
+      <h2>1. Klipy</h2>
+      <textarea id="urls" placeholder="Sem vlož linky na klipy, každý na nový riadok:
+https://clips.twitch.tv/...
+https://www.twitch.tv/caseoh_/clip/...
+(funguje aj YouTube, Kick alebo cesta k súboru na disku)"></textarea>
+
+      <div class="row3">
+        <div><label>Cieľová dĺžka (s)</label><input id="target" type="number" value="45" min="10" max="180"></div>
+        <div><label>Layout</label>
+          <select id="layout">
+            <option value="auto">Auto (facecam hore ak sa nájde)</option>
+            <option value="split">Facecam hore + hra dole</option>
+            <option value="blur">Rozmazané pozadie</option>
+            <option value="fill">Vyplniť (orez do 9:16)</option>
+          </select></div>
+        <div><label>Jazyk prepisu</label>
+          <select id="language">
+            <option value="">Auto-detekcia</option>
+            <option value="en">English</option>
+            <option value="sk">Slovenčina</option>
+            <option value="cs">Čeština</option>
+            <option value="de">Deutsch</option>
+            <option value="pl">Polski</option>
+            <option value="es">Español</option>
+          </select></div>
+      </div>
+      <div class="row3">
+        <div><label>Font titulkov</label>
+          <select id="font">
+            <option value="LuckiestGuy">Luckiest Guy (MrBeast vibe)</option>
+            <option value="Anton">Anton (Hormozi vibe)</option>
+            <option value="Bangers">Bangers (komiks)</option>
+          </select></div>
+        <div><label>Farba zvýrazneného slova</label><input id="highlight" type="color" value="#ffe600" style="height:38px;padding:3px"></div>
+        <div><label>Farba dôrazu (nadávky, mená)</label><input id="accent" type="color" value="#ff3b3b" style="height:38px;padding:3px"></div>
+      </div>
+      <label>Štýl pre AI režiséra (voliteľné)</label>
+      <input id="style" placeholder="napr. 'CaseOh rage momenty, veľa zoomov a boom efektov' alebo 'wholesome, pokojnejší strih'">
+
+      <div class="actions">
+        <button id="go" onclick="startJob()">▶ Vyrobiť video</button>
+        <span id="status" class="muted"></span>
+      </div>
+      <div class="bar"><i id="bar"></i></div>
+      <div class="stage"><span id="stage"></span><span id="pct"></span></div>
+      <pre id="log" class="log hidden"></pre>
+    </div>
+
+    <div id="resultPanel" class="panel hidden" style="margin-top:18px">
+      <h2>3. Výsledok</h2>
+      <div class="result">
+        <div>
+          <video id="video" controls playsinline></video>
+          <div class="actions">
+            <a id="download" download><button>⬇ Stiahnuť MP4</button></a>
+          </div>
+          <p class="muted" id="outPath"></p>
+        </div>
+        <div>
+          <label>Hook (na začiatku videa)</label>
+          <div class="copybox" id="hook"></div>
+          <label>Popis pre TikTok <button class="secondary" style="padding:4px 8px;font-size:12px" onclick="copyPost()">kopírovať popis + hashtagy</button></label>
+          <div class="copybox" id="caption"></div>
+          <label>Hashtagy</label>
+          <div class="tags" id="tags"></div>
+          <details>
+            <summary>Upraviť plán strihu (JSON) a prerenderovať</summary>
+            <textarea id="planJson" style="min-height:260px"></textarea>
+            <div class="actions"><button class="secondary" onclick="rerender()">↻ Prerenderovať s týmto plánom</button></div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <aside>
+    <div class="panel">
+      <h2>2. Analýza klipov</h2>
+      <div id="clips" class="clips muted">Zatiaľ nič. Vlož linky a spusti.</div>
+    </div>
+    <div class="panel" style="margin-top:18px">
+      <h2>História</h2>
+      <div id="history" class="clips muted">–</div>
+    </div>
+    <div class="panel" style="margin-top:18px">
+      <h2>Ako to funguje</h2>
+      <p class="muted" style="margin:0;line-height:1.5">
+        1. yt-dlp stiahne klipy.<br>
+        2. Whisper (lokálne) prepíše reč so slovami a časmi.<br>
+        3. Nájdu sa najhlasnejšie momenty a facecam.<br>
+        4. Claude vyberie poradie, strihy, zoomy, SFX, hook a hashtagy.<br>
+        5. FFmpeg vyrenderuje 1080×1920 video s titulkami a efektmi.<br>
+        Všetko beží na tvojom počítači.
+      </p>
+    </div>
+  </aside>
+</main>
+
+<dialog id="settings">
+  <h2>Nastavenia</h2>
+  <label>Anthropic API kľúč <span class="muted">(uloží sa len lokálne do ~/.clipper/config.json)</span></label>
+  <input id="s_key" type="password" placeholder="sk-ant-...">
+  <div class="row">
+    <div><label>Claude model</label><input id="s_model" value="claude-opus-5-5"></div>
+    <div><label>Whisper model</label>
+      <select id="s_whisper">
+        <option value="tiny">tiny (najrýchlejší)</option>
+        <option value="base">base</option>
+        <option value="small">small (odporúčané na CPU)</option>
+        <option value="medium">medium</option>
+        <option value="large-v3">large-v3 (najpresnejší, GPU)</option>
+      </select></div>
+  </div>
+  <div class="row">
+    <div><label>Whisper zariadenie</label>
+      <select id="s_device"><option value="auto">auto</option><option value="cpu">cpu</option><option value="cuda">cuda (NVIDIA)</option></select></div>
+    <div><label>Video enkodér</label>
+      <select id="s_enc"><option value="auto">auto</option><option value="libx264">libx264 (CPU)</option><option value="h264_nvenc">h264_nvenc (NVIDIA)</option></select></div>
+  </div>
+  <label>Výstupný priečinok</label>
+  <input id="s_out">
+  <p class="muted" id="s_info"></p>
+  <div class="actions">
+    <button onclick="saveSettings()">Uložiť</button>
+    <button class="secondary" onclick="document.getElementById('settings').close()">Zavrieť</button>
+  </div>
+</dialog>
+
+<script>
+const $ = id => document.getElementById(id);
+let current = null, timer = null;
+
+async function api(path, opts) {
+  const r = await fetch(path, Object.assign({headers:{'Content-Type':'application/json'}}, opts||{}));
+  if (!r.ok) throw new Error((await r.json().catch(()=>({detail:r.statusText}))).detail || r.statusText);
+  return r.json();
+}
+
+async function loadSettings() {
+  const s = await api('/api/settings');
+  $('pillKey').textContent = s.anthropic_api_key ? 'Claude: pripojený' : 'Claude: bez kľúča (heuristika)';
+  $('pillKey').className = 'pill ' + (s.anthropic_api_key ? 'ok' : 'bad');
+  $('pillFf').textContent = s.ffmpeg_ok ? ('ffmpeg: OK · ' + s.encoder) : 'ffmpeg: CHÝBA';
+  $('pillFf').className = 'pill ' + (s.ffmpeg_ok ? 'ok' : 'bad');
+  $('s_key').value = s.anthropic_api_key ? 'set' : '';
+  $('s_model').value = s.claude_model; $('s_whisper').value = s.whisper_model; $('s_device').value = s.whisper_device;
+  $('s_enc').value = s.video_encoder; $('s_out').value = s.output_dir;
+  $('s_info').textContent = s.ffmpeg_ok ? ('ffmpeg: ' + s.ffmpeg) : 'ffmpeg nenájdený. Vo Windows: winget install Gyan.FFmpeg a reštartuj appku.';
+}
+function openSettings(){ $('settings').showModal(); }
+async function saveSettings(){
+  const body = { claude_model:$('s_model').value, whisper_model:$('s_whisper').value, whisper_device:$('s_device').value,
+                 video_encoder:$('s_enc').value, output_dir:$('s_out').value };
+  if ($('s_key').value && $('s_key').value !== 'set') body.anthropic_api_key = $('s_key').value.trim();
+  await api('/api/settings', {method:'POST', body:JSON.stringify(body)});
+  $('settings').close(); loadSettings();
+}
+
+async function startJob(){
+  const urls = $('urls').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if (!urls.length) { alert('Vlož aspoň jeden link.'); return; }
+  const options = { target_length: +$('target').value, layout: $('layout').value, language: $('language').value,
+                    font: $('font').value, highlight_color: $('highlight').value, accent_color: $('accent').value,
+                    style_hint: $('style').value };
+  try {
+    const job = await api('/api/jobs', {method:'POST', body:JSON.stringify({urls, options})});
+    watch(job.id);
+  } catch(e) { alert(e.message); }
+}
+
+function watch(id){
+  current = id; $('go').disabled = true; $('resultPanel').classList.add('hidden'); $('log').classList.remove('hidden');
+  clearInterval(timer); timer = setInterval(poll, 1000); poll();
+}
+
+const stageNames = {download:'Sťahovanie', transcribe:'Prepis a analýza', plan:'Claude plánuje strih', render:'Render'};
+async function poll(){
+  if (!current) return;
+  const j = await api('/api/jobs/' + current);
+  $('bar').style.width = (j.progress*100).toFixed(0) + '%';
+  $('stage').textContent = (stageNames[j.stage] || j.stage || '') + (j.status==='queued' ? ' (v rade)' : '');
+  $('pct').textContent = j.status==='running' ? (j.progress*100).toFixed(0)+'%' : j.status;
+  $('log').textContent = j.log.join('\n'); $('log').scrollTop = $('log').scrollHeight;
+  $('status').textContent = j.status==='error' ? '✖ ' + j.error : '';
+  renderClips(j.clips);
+  if (j.status==='done' || j.status==='error') {
+    clearInterval(timer); $('go').disabled = false; loadHistory();
+    if (j.status==='done') showResult(j);
+  }
+}
+
+function renderClips(clips){
+  if (!clips || !clips.length) return;
+  $('clips').innerHTML = clips.map(c => `<div><b>${esc(c.title||c.id)}</b><br>
+    <span class="muted">${esc(c.broadcaster||'')} ${c.game?('· '+esc(c.game)):''} · ${c.duration.toFixed(1)}s · ${c.views?c.views+' views · ':''}${c.words} slov (${c.language}) · ${c.facecam?'facecam ✓':'bez facecam'}</span></div>`).join('');
+}
+
+function showResult(j){
+  $('resultPanel').classList.remove('hidden');
+  $('video').src = '/api/jobs/' + j.id + '/video?t=' + Date.now();
+  $('download').href = '/api/jobs/' + j.id + '/video';
+  $('outPath').textContent = j.output;
+  $('hook').textContent = j.plan.hook;
+  $('caption').textContent = j.plan.tiktok_caption;
+  $('tags').innerHTML = j.plan.hashtags.map(h => '<span>#' + esc(h) + '</span>').join('');
+  $('planJson').value = JSON.stringify(j.plan, null, 2);
+  $('resultPanel').scrollIntoView({behavior:'smooth'});
+}
+
+async function rerender(){
+  let plan;
+  try { plan = JSON.parse($('planJson').value); } catch(e) { alert('Neplatný JSON: ' + e.message); return; }
+  try { await api('/api/jobs/' + current + '/rerender', {method:'POST', body:JSON.stringify(plan)}); watch(current); }
+  catch(e) { alert(e.message); }
+}
+
+function copyPost(){
+  const j = $('caption').textContent + '\n\n' + [...$('tags').querySelectorAll('span')].map(s=>s.textContent).join(' ');
+  navigator.clipboard.writeText(j);
+}
+
+async function loadHistory(){
+  const jobs = await api('/api/jobs');
+  $('history').innerHTML = jobs.length ? jobs.map(j => `<div><a href="#" onclick="watch('${j.id}');return false" style="color:inherit">
+    ${j.status==='done'?'✅':j.status==='error'?'✖':'⏳'} ${esc((j.output||'').split(/[\\/]/).pop() || j.urls.length + ' klipov')}</a></div>`).join('') : '–';
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+loadSettings(); loadHistory();
+</script>
+</body>
+</html>
