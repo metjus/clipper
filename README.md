@@ -53,7 +53,11 @@ Výstup: `~/.clipper/output/<názov>.mp4` + `<názov>.jpg` (cover) +
 
 ## Spustenie na Windows
 
-1. Nainštaluj [Python 3.11+](https://www.python.org/downloads/) (zaškrtni *Add python.exe to PATH*).
+1. Nainštaluj Python 3.12: v PowerShelli `winget install -e --id Python.Python.3.12`
+   (alebo z [python.org](https://www.python.org/downloads/), zaškrtni *Add python.exe to PATH*).
+   Podporované sú verzie 3.10 – 3.13. `run.bat` si Python nájde sám aj cez `py` launcher.
+   Ak Windows pri `python` otvára Microsoft Store, vypni to v *Nastavenia → Aplikácie →
+   Rozšírené nastavenia aplikácií → Aliasy spustenia aplikácií* (python.exe, python3.exe).
 2. Nainštaluj ffmpeg: v PowerShelli `winget install -e --id Gyan.FFmpeg` (alebo nechaj `run.bat`, nech to skúsi sám).
 3. Stiahni / naklonuj toto repo a spusti **`run.bat`**. Otvorí sa prehliadač na `http://127.0.0.1:8787`.
 4. V ⚙ Nastaveniach vlož Anthropic API kľúč (uloží sa len lokálne do `%USERPROFILE%\.clipper\config.json`).
