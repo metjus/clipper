@@ -8,50 +8,76 @@
   :root { --bg:#0f1115; --panel:#171a21; --line:#262b36; --text:#e8eaf0; --muted:#8b93a7; --accent:#ffe600; --accent2:#ff3b3b; --ok:#3ddc84; }
   * { box-sizing: border-box; }
   body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--text); }
-  header { display:flex; align-items:center; justify-content:space-between; padding:14px 22px; border-bottom:1px solid var(--line); }
+  header { display:flex; align-items:center; justify-content:space-between; padding:12px 22px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--bg); z-index:5; }
   header h1 { font-size:18px; margin:0; letter-spacing:.3px; }
   header h1 span { color:var(--accent); }
-  main { display:grid; grid-template-columns: 1fr 420px; gap:18px; padding:18px 22px; max-width:1400px; margin:0 auto; }
-  @media (max-width: 980px) { main { grid-template-columns: 1fr; } }
-  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; }
-  h2 { font-size:14px; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); margin:0 0 12px; }
+  main { display:grid; grid-template-columns: 1fr 400px; gap:18px; padding:18px 22px; max-width:1480px; margin:0 auto; }
+  @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:18px; }
+  h2 { font-size:13px; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); margin:0 0 12px; display:flex; justify-content:space-between; align-items:center; }
   textarea, input, select { width:100%; background:#0c0e12; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:9px 10px; font: inherit; }
-  textarea { min-height:120px; resize:vertical; font-family: ui-monospace, Consolas, monospace; font-size:13px; }
+  textarea { min-height:110px; resize:vertical; font-family: ui-monospace, Consolas, monospace; font-size:13px; }
   label { display:block; font-size:12px; color:var(--muted); margin:10px 0 4px; }
   .row { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
   .row3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
-  button { background:var(--accent); color:#111; border:0; border-radius:8px; padding:10px 16px; font-weight:700; cursor:pointer; font: inherit; font-weight:700; }
+  .row4 { display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px; }
+  @media (max-width: 700px) { .row3, .row4 { grid-template-columns: 1fr 1fr; } }
+  button { background:var(--accent); color:#111; border:0; border-radius:8px; padding:10px 16px; cursor:pointer; font: inherit; font-weight:700; }
   button.secondary { background:#242938; color:var(--text); }
+  button.small { padding:5px 10px; font-size:12px; }
+  button.danger { background:#3a1616; color:#ff8080; }
   button:disabled { opacity:.5; cursor:default; }
   .actions { display:flex; gap:10px; margin-top:14px; align-items:center; flex-wrap:wrap; }
   .bar { height:8px; background:#0c0e12; border-radius:6px; overflow:hidden; margin-top:10px; }
   .bar i { display:block; height:100%; background:linear-gradient(90deg, var(--accent), #ff9f1c); width:0; transition:width .3s; }
   .stage { font-size:12px; color:var(--muted); margin-top:6px; display:flex; justify-content:space-between; }
-  pre.log { background:#0c0e12; border:1px solid var(--line); border-radius:8px; padding:10px; font-size:12px; max-height:260px; overflow:auto; white-space:pre-wrap; color:#b9c0d1; margin:10px 0 0; }
+  pre.log { background:#0c0e12; border:1px solid var(--line); border-radius:8px; padding:10px; font-size:12px; max-height:240px; overflow:auto; white-space:pre-wrap; color:#b9c0d1; margin:10px 0 0; }
   .result { display:grid; grid-template-columns: 300px 1fr; gap:16px; }
   @media (max-width: 700px) { .result { grid-template-columns: 1fr; } }
   video { width:100%; aspect-ratio: 9/16; background:#000; border-radius:12px; }
   .copybox { background:#0c0e12; border:1px solid var(--line); border-radius:8px; padding:10px; font-size:14px; white-space:pre-wrap; }
   .tags span { display:inline-block; background:#242938; border-radius:6px; padding:3px 8px; margin:3px 4px 0 0; font-size:13px; }
   .muted { color:var(--muted); font-size:13px; }
-  .pill { font-size:11px; padding:3px 8px; border-radius:20px; background:#242938; color:var(--muted); }
+  .pill { font-size:11px; padding:3px 8px; border-radius:20px; background:#242938; color:var(--muted); white-space:nowrap; }
   .pill.ok { background:#163a2a; color:var(--ok); }
   .pill.bad { background:#3a1616; color:#ff8080; }
-  .clips { font-size:13px; }
-  .clips div { padding:6px 0; border-bottom:1px solid var(--line); }
-  dialog { background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:20px; width:min(560px, 92vw); }
+  .list { font-size:13px; }
+  .list > div { padding:8px 0; border-bottom:1px solid var(--line); display:flex; gap:10px; align-items:flex-start; }
+  .list img { width:96px; aspect-ratio:16/9; object-fit:cover; border-radius:6px; background:#000; flex:none; }
+  .list .grow { flex:1; min-width:0; }
+  .list b { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  dialog { background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:20px; width:min(600px, 94vw); }
   dialog::backdrop { background:rgba(0,0,0,.6); }
   details summary { cursor:pointer; color:var(--muted); font-size:13px; margin-top:10px; }
-  .hidden { display:none; }
+  .hidden { display:none !important; }
+  .tabs { display:flex; gap:6px; margin-bottom:10px; }
+  .tabs button { background:#242938; color:var(--muted); padding:6px 12px; font-size:13px; }
+  .tabs button.active { background:#2f3650; color:var(--text); }
+  .check { display:flex; align-items:center; gap:8px; font-size:13px; margin-top:12px; }
+  .check input { width:auto; }
+  .preview { width:100%; border-radius:8px; background:#1b1e26; margin-top:8px; display:block; }
+  .clipcard { border:1px solid var(--line); border-radius:10px; padding:10px; margin-top:8px; background:#12141a; }
+  .clipcard .head { display:flex; gap:8px; align-items:center; }
+  .clipcard .head b { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:13px; }
+  .clipcard input[type=number] { padding:5px 7px; font-size:12px; }
+  .camedit { position:relative; display:inline-block; max-width:100%; user-select:none; }
+  .camedit img { display:block; max-width:100%; border-radius:8px; }
+  .camedit .box { position:absolute; border:2px solid var(--accent); background:rgba(255,230,0,.15); cursor:move; }
+  .camedit .box i { position:absolute; right:-6px; bottom:-6px; width:14px; height:14px; background:var(--accent); border-radius:3px; cursor:nwse-resize; }
+  .drop { border:2px dashed var(--line); border-radius:10px; padding:12px; text-align:center; color:var(--muted); font-size:13px; margin-top:10px; cursor:pointer; }
+  .drop.over { border-color:var(--accent); color:var(--text); }
+  .kv { font-size:12px; color:var(--muted); }
+  .cover { width:100%; border-radius:8px; margin-top:8px; }
 </style>
 </head>
 <body>
 <header>
-  <h1>AI <span>clipper</span> <span class="muted" style="font-weight:400;font-size:12px;margin-left:8px">Twitch klipy → TikTok</span></h1>
-  <div style="display:flex;gap:10px;align-items:center">
+  <h1>AI <span>clipper</span> <span class="muted" style="font-weight:400;font-size:12px;margin-left:8px">Twitch / Kick klipy → TikTok</span></h1>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
     <span id="pillKey" class="pill">Claude: …</span>
     <span id="pillFf" class="pill">ffmpeg: …</span>
-    <button class="secondary" onclick="openSettings()">⚙ Nastavenia</button>
+    <button class="secondary small" onclick="openOutput()">📁 Výstupy</button>
+    <button class="secondary small" onclick="openSettings()">⚙ Nastavenia</button>
   </div>
 </header>
 
@@ -59,46 +85,73 @@
   <section>
     <div class="panel">
       <h2>1. Klipy</h2>
-      <textarea id="urls" placeholder="Sem vlož linky na klipy, každý na nový riadok:
+      <div class="tabs">
+        <button class="active" id="tabLinks" onclick="tab('links')">Linky</button>
+        <button id="tabDiscover" onclick="tab('discover')">🔎 Top klipy streamera</button>
+      </div>
+      <div id="paneLinks">
+        <textarea id="urls" placeholder="Sem vlož linky na klipy, každý na nový riadok:
 https://clips.twitch.tv/...
 https://www.twitch.tv/caseoh_/clip/...
-(funguje aj YouTube, Kick alebo cesta k súboru na disku)"></textarea>
+https://kick.com/<streamer>/clips/...
+(alebo cesta k súboru na disku)"></textarea>
+        <div class="drop" id="drop">⬆ Pretiahni sem video súbory z disku, alebo klikni a vyber (pridajú sa do zoznamu)</div>
+        <input type="file" id="fileInput" accept="video/*" multiple class="hidden">
+      </div>
+      <div id="paneDiscover" class="hidden">
+        <div class="row3">
+          <div><label>Streamer (meno alebo link kanála)</label><input id="channel" placeholder="xqc, caseoh_, kick.com/…"></div>
+          <div><label>Platforma</label><select id="platform"><option value="twitch">Twitch</option><option value="kick">Kick</option></select></div>
+          <div><label>Obdobie</label><select id="range"><option value="24h">24 hodín</option><option value="7d" selected>7 dní</option><option value="30d">30 dní</option><option value="all">všetko</option></select></div>
+        </div>
+        <div class="actions"><button class="secondary" onclick="runDiscover()">Načítať top klipy</button><span id="discoverStatus" class="muted"></span></div>
+        <div id="discoverList" class="list"></div>
+        <div class="actions hidden" id="discoverActions"><button onclick="addSelected()">➕ Pridať vybrané do zoznamu</button></div>
+      </div>
+    </div>
 
-      <div class="row3">
+    <div class="panel">
+      <h2>2. Štýl</h2>
+      <div class="row4">
         <div><label>Cieľová dĺžka (s)</label><input id="target" type="number" value="45" min="10" max="180"></div>
         <div><label>Layout</label>
           <select id="layout">
-            <option value="auto">Auto (facecam hore ak sa nájde)</option>
+            <option value="auto">Auto (facecam hore, ak sa nájde)</option>
             <option value="split">Facecam hore + hra dole</option>
             <option value="blur">Rozmazané pozadie</option>
             <option value="fill">Vyplniť (orez do 9:16)</option>
           </select></div>
         <div><label>Jazyk prepisu</label>
           <select id="language">
-            <option value="">Auto-detekcia</option>
-            <option value="en">English</option>
-            <option value="sk">Slovenčina</option>
-            <option value="cs">Čeština</option>
-            <option value="de">Deutsch</option>
-            <option value="pl">Polski</option>
-            <option value="es">Español</option>
+            <option value="">Auto-detekcia</option><option value="en">English</option><option value="sk">Slovenčina</option>
+            <option value="cs">Čeština</option><option value="de">Deutsch</option><option value="pl">Polski</option><option value="es">Español</option>
           </select></div>
+        <div><label>Farebný look</label>
+          <select id="look"><option value="punchy">Punchy (sýte farby)</option><option value="warm">Teplý</option><option value="cold">Studený</option><option value="vintage">Vintage</option><option value="none">Bez úprav</option></select></div>
       </div>
-      <div class="row3">
+      <div class="row4">
         <div><label>Font titulkov</label>
-          <select id="font">
-            <option value="LuckiestGuy">Luckiest Guy (MrBeast vibe)</option>
-            <option value="Anton">Anton (Hormozi vibe)</option>
-            <option value="Bangers">Bangers (komiks)</option>
-          </select></div>
-        <div><label>Farba zvýrazneného slova</label><input id="highlight" type="color" value="#ffe600" style="height:38px;padding:3px"></div>
-        <div><label>Farba dôrazu (nadávky, mená)</label><input id="accent" type="color" value="#ff3b3b" style="height:38px;padding:3px"></div>
+          <select id="font"><option value="LuckiestGuy">Luckiest Guy</option><option value="Anton">Anton</option><option value="Bangers">Bangers</option></select></div>
+        <div><label>Animácia titulkov</label>
+          <select id="preset"><option value="pop">Pop (MrBeast štýl)</option><option value="karaoke">Karaoke</option><option value="bounce">Bounce (hyper)</option><option value="minimal">Minimal</option></select></div>
+        <div><label>Zvýraznené slovo</label><input id="highlight" type="color" value="#ffe600" style="height:38px;padding:3px"></div>
+        <div><label>Dôraz (nadávky, mená)</label><input id="accent" type="color" value="#ff3b3b" style="height:38px;padding:3px"></div>
       </div>
+      <div class="row">
+        <div><label>Veľkosť titulkov</label><input id="capsize" type="range" min="60" max="140" value="96" oninput="previewCaptions()"></div>
+        <div><label>Hudba na pozadí (automaticky stíšená pod rečou)</label><select id="music"><option value="">Bez hudby</option></select></div>
+      </div>
+      <img id="capPreview" class="preview" alt="náhľad titulkov">
       <label>Štýl pre AI režiséra (voliteľné)</label>
       <input id="style" placeholder="napr. 'CaseOh rage momenty, veľa zoomov a boom efektov' alebo 'wholesome, pokojnejší strih'">
-
+      <div class="row3">
+        <label class="check"><input type="checkbox" id="jumpcuts" checked> Vystrihnúť ticho (jump-cuty)</label>
+        <label class="check"><input type="checkbox" id="progressbar" checked> Progress bar na spodku</label>
+        <label class="check"><input type="checkbox" id="portrait" checked> Použiť vertikálnu verziu klipu z Twitchu, ak existuje</label>
+      </div>
       <div class="actions">
         <button id="go" onclick="startJob()">▶ Vyrobiť video</button>
+        <button id="cancel" class="danger hidden" onclick="cancelJob()">■ Zrušiť</button>
         <span id="status" class="muted"></span>
       </div>
       <div class="bar"><i id="bar"></i></div>
@@ -106,27 +159,34 @@ https://www.twitch.tv/caseoh_/clip/...
       <pre id="log" class="log hidden"></pre>
     </div>
 
-    <div id="resultPanel" class="panel hidden" style="margin-top:18px">
-      <h2>3. Výsledok</h2>
+    <div id="resultPanel" class="panel hidden">
+      <h2>4. Výsledok <span><button class="secondary small" onclick="openOutput()">📁 otvoriť priečinok</button></span></h2>
       <div class="result">
         <div>
           <video id="video" controls playsinline></video>
           <div class="actions">
             <a id="download" download><button>⬇ Stiahnuť MP4</button></a>
+            <a id="coverLink" download><button class="secondary">🖼 Cover</button></a>
           </div>
-          <p class="muted" id="outPath"></p>
+          <p class="muted" id="outPath" style="word-break:break-all"></p>
         </div>
         <div>
-          <label>Hook (na začiatku videa)</label>
-          <div class="copybox" id="hook"></div>
-          <label>Popis pre TikTok <button class="secondary" style="padding:4px 8px;font-size:12px" onclick="copyPost()">kopírovať popis + hashtagy</button></label>
-          <div class="copybox" id="caption"></div>
-          <label>Hashtagy</label>
-          <div class="tags" id="tags"></div>
+          <label>Hook (text na začiatku videa)</label>
+          <input id="hook">
+          <label>Popis pre TikTok <button class="secondary small" onclick="copyPost()">kopírovať popis + hashtagy</button></label>
+          <textarea id="caption" style="min-height:70px;font-family:inherit"></textarea>
+          <label>Hashtagy (oddelené medzerou)</label>
+          <input id="tags">
+          <label>Klipy v poradí (šípkami presuň, odškrtnutím vyhoď, oreza v sekundách)</label>
+          <div id="planClips"></div>
+          <div class="actions">
+            <button onclick="rerender()">↻ Prerenderovať s úpravami</button>
+            <span class="muted">Sťahovanie ani prepis sa neopakujú.</span>
+          </div>
           <details>
-            <summary>Upraviť plán strihu (JSON) a prerenderovať</summary>
+            <summary>Plán strihu ako JSON (pre pokročilých: zoomy, SFX, otrasy…)</summary>
             <textarea id="planJson" style="min-height:260px"></textarea>
-            <div class="actions"><button class="secondary" onclick="rerender()">↻ Prerenderovať s týmto plánom</button></div>
+            <div class="actions"><button class="secondary small" onclick="rerenderJson()">↻ Prerenderovať z JSON</button></div>
           </details>
         </div>
       </div>
@@ -135,51 +195,58 @@ https://www.twitch.tv/caseoh_/clip/...
 
   <aside>
     <div class="panel">
-      <h2>2. Analýza klipov</h2>
-      <div id="clips" class="clips muted">Zatiaľ nič. Vlož linky a spusti.</div>
+      <h2>3. Analýza klipov</h2>
+      <div id="clips" class="list muted">Zatiaľ nič. Vlož linky a spusti.</div>
     </div>
-    <div class="panel" style="margin-top:18px">
-      <h2>História</h2>
-      <div id="history" class="clips muted">–</div>
+    <div class="panel">
+      <h2>História <span><button class="secondary small" onclick="loadHistory()">↻</button></span></h2>
+      <div id="history" class="list muted">–</div>
     </div>
-    <div class="panel" style="margin-top:18px">
+    <div class="panel">
       <h2>Ako to funguje</h2>
-      <p class="muted" style="margin:0;line-height:1.5">
-        1. yt-dlp stiahne klipy.<br>
-        2. Whisper (lokálne) prepíše reč so slovami a časmi.<br>
-        3. Nájdu sa najhlasnejšie momenty a facecam.<br>
+      <p class="muted" style="margin:0;line-height:1.55">
+        1. yt-dlp stiahne klipy (Twitch, Kick, YouTube, súbor).<br>
+        2. Whisper lokálne prepíše reč so slovami a časmi.<br>
+        3. Nájdu sa najhlasnejšie momenty, ticho a facecam.<br>
         4. Claude vyberie poradie, strihy, zoomy, SFX, hook a hashtagy.<br>
-        5. FFmpeg vyrenderuje 1080×1920 video s titulkami a efektmi.<br>
+        5. FFmpeg vyrenderuje 1080×1920 s titulkami, efektmi, hudbou a progress barom.<br>
         Všetko beží na tvojom počítači.
       </p>
     </div>
   </aside>
 </main>
 
+<dialog id="camDialog">
+  <h2>Facecam: <span id="camTitle"></span></h2>
+  <p class="muted" style="margin:0 0 8px">Potiahni rámček na webkameru streamera (alebo ho zmaž, ak klip kameru nemá). Pravý dolný roh mení veľkosť.</p>
+  <div class="camedit" id="camEdit"><img id="camImg"><div class="box" id="camBox"><i></i></div></div>
+  <div class="actions">
+    <button onclick="saveCam()">Uložiť</button>
+    <button class="secondary" onclick="resetCam()">Žiadna kamera (rozmazané pozadie)</button>
+    <button class="secondary" onclick="document.getElementById('camDialog').close()">Zavrieť</button>
+  </div>
+</dialog>
+
 <dialog id="settings">
   <h2>Nastavenia</h2>
   <label>Anthropic API kľúč <span class="muted">(uloží sa len lokálne do ~/.clipper/config.json)</span></label>
-  <input id="s_key" type="password" placeholder="sk-ant-...">
+  <div style="display:flex;gap:8px"><input id="s_key" type="password" placeholder="sk-ant-..."><button class="secondary small" onclick="testKey()">Otestovať</button></div>
+  <div class="muted" id="s_test"></div>
   <div class="row">
     <div><label>Claude model</label><input id="s_model" value="claude-opus-5-5"></div>
     <div><label>Whisper model</label>
       <select id="s_whisper">
-        <option value="tiny">tiny (najrýchlejší)</option>
-        <option value="base">base</option>
-        <option value="small">small (odporúčané na CPU)</option>
-        <option value="medium">medium</option>
-        <option value="large-v3">large-v3 (najpresnejší, GPU)</option>
+        <option value="tiny">tiny (najrýchlejší)</option><option value="base">base</option><option value="small">small (odporúčané na CPU)</option>
+        <option value="medium">medium</option><option value="large-v3">large-v3 (najpresnejší, GPU)</option>
       </select></div>
   </div>
   <div class="row">
-    <div><label>Whisper zariadenie</label>
-      <select id="s_device"><option value="auto">auto</option><option value="cpu">cpu</option><option value="cuda">cuda (NVIDIA)</option></select></div>
-    <div><label>Video enkodér</label>
-      <select id="s_enc"><option value="auto">auto</option><option value="libx264">libx264 (CPU)</option><option value="h264_nvenc">h264_nvenc (NVIDIA)</option></select></div>
+    <div><label>Whisper zariadenie</label><select id="s_device"><option value="auto">auto</option><option value="cpu">cpu</option><option value="cuda">cuda (NVIDIA)</option></select></div>
+    <div><label>Video enkodér</label><select id="s_enc"><option value="auto">auto</option><option value="libx264">libx264 (CPU)</option><option value="h264_nvenc">h264_nvenc (NVIDIA)</option></select></div>
   </div>
   <label>Výstupný priečinok</label>
   <input id="s_out">
-  <p class="muted" id="s_info"></p>
+  <p class="muted" id="s_info" style="line-height:1.5"></p>
   <div class="actions">
     <button onclick="saveSettings()">Uložiť</button>
     <button class="secondary" onclick="document.getElementById('settings').close()">Zavrieť</button>
@@ -188,14 +255,23 @@ https://www.twitch.tv/caseoh_/clip/...
 
 <script>
 const $ = id => document.getElementById(id);
-let current = null, timer = null;
+let current = null, timer = null, lastJob = null, camClip = null;
+const OPT_IDS = ['target','layout','language','look','font','preset','highlight','accent','capsize','music','style','jumpcuts','progressbar','portrait'];
 
 async function api(path, opts) {
   const r = await fetch(path, Object.assign({headers:{'Content-Type':'application/json'}}, opts||{}));
-  if (!r.ok) throw new Error((await r.json().catch(()=>({detail:r.statusText}))).detail || r.statusText);
+  if (!r.ok) { let d; try { d = await r.json(); } catch(e) { d = {detail:r.statusText}; } throw new Error(d.detail || r.statusText); }
   return r.json();
 }
+function esc(s){ return String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmtDur(s){ s = Math.round(s||0); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
 
+// ---------- options persistence ----------
+function saveOpts(){ const o = {}; for (const id of OPT_IDS) { const el = $(id); o[id] = el.type === 'checkbox' ? el.checked : el.value; } localStorage.setItem('clipper.opts', JSON.stringify(o)); }
+function loadOpts(){ try { const o = JSON.parse(localStorage.getItem('clipper.opts')||'{}'); for (const id of OPT_IDS) { if (o[id] === undefined || !$(id)) continue; if ($(id).type === 'checkbox') $(id).checked = o[id]; else $(id).value = o[id]; } } catch(e) {} }
+for (const id of OPT_IDS) $(id).addEventListener('change', () => { saveOpts(); if (['font','preset','highlight','accent','capsize'].includes(id)) previewCaptions(); });
+
+// ---------- settings ----------
 async function loadSettings() {
   const s = await api('/api/settings');
   $('pillKey').textContent = s.anthropic_api_key ? 'Claude: pripojený' : 'Claude: bez kľúča (heuristika)';
@@ -205,88 +281,210 @@ async function loadSettings() {
   $('s_key').value = s.anthropic_api_key ? 'set' : '';
   $('s_model').value = s.claude_model; $('s_whisper').value = s.whisper_model; $('s_device').value = s.whisper_device;
   $('s_enc').value = s.video_encoder; $('s_out').value = s.output_dir;
-  $('s_info').textContent = s.ffmpeg_ok ? ('ffmpeg: ' + s.ffmpeg) : 'ffmpeg nenájdený. Vo Windows: winget install Gyan.FFmpeg a reštartuj appku.';
+  $('s_info').innerHTML = (s.ffmpeg_ok ? ('ffmpeg: ' + esc(s.ffmpeg)) : 'ffmpeg nenájdený. Vo Windows: <code>winget install Gyan.FFmpeg</code> a reštartuj appku.')
+    + '<br>Hudba: hoď MP3/WAV do <code>' + esc(s.music_dir) + '</code> (' + s.music_files.length + ' súborov). Vlastné SFX: <code>~/.clipper/sfx/boom.wav</code> atď.';
+  const cur = $('music').value;
+  $('music').innerHTML = '<option value="">Bez hudby</option>' + (s.music_files.length ? '<option value="random">Náhodná z priečinka</option>' : '<option value="" disabled>(priečinok s hudbou je prázdny)</option>')
+    + s.music_files.map(f => `<option value="${esc(f)}">${esc(f)}</option>`).join('');
+  $('music').value = [...$('music').options].some(o => o.value === cur) ? cur : '';
 }
 function openSettings(){ $('settings').showModal(); }
 async function saveSettings(){
-  const body = { claude_model:$('s_model').value, whisper_model:$('s_whisper').value, whisper_device:$('s_device').value,
-                 video_encoder:$('s_enc').value, output_dir:$('s_out').value };
+  const body = { claude_model:$('s_model').value, whisper_model:$('s_whisper').value, whisper_device:$('s_device').value, video_encoder:$('s_enc').value, output_dir:$('s_out').value };
   if ($('s_key').value && $('s_key').value !== 'set') body.anthropic_api_key = $('s_key').value.trim();
   await api('/api/settings', {method:'POST', body:JSON.stringify(body)});
   $('settings').close(); loadSettings();
 }
+async function testKey(){
+  if ($('s_key').value && $('s_key').value !== 'set') await api('/api/settings', {method:'POST', body:JSON.stringify({anthropic_api_key:$('s_key').value.trim()})});
+  $('s_test').textContent = 'Testujem…';
+  const r = await api('/api/settings/test', {method:'POST'});
+  $('s_test').textContent = (r.ok ? '✅ ' : '✖ ') + r.message; loadSettings();
+}
+async function openOutput(){ const r = await api('/api/open-output', {method:'POST'}); if (!r.ok) alert('Priečinok: ' + r.path); }
 
+// ---------- caption preview ----------
+let previewTimer = null;
+function previewCaptions(){
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(() => {
+    const q = new URLSearchParams({font:$('font').value, preset:$('preset').value, highlight:$('highlight').value, accent:$('accent').value, size:$('capsize').value});
+    $('capPreview').src = '/api/preview/captions?' + q.toString();
+  }, 250);
+}
+
+// ---------- tabs / discovery / upload ----------
+function tab(name){ $('paneLinks').classList.toggle('hidden', name!=='links'); $('paneDiscover').classList.toggle('hidden', name!=='discover'); $('tabLinks').classList.toggle('active', name==='links'); $('tabDiscover').classList.toggle('active', name==='discover'); }
+async function runDiscover(){
+  const ch = $('channel').value.trim(); if (!ch) return;
+  $('discoverStatus').textContent = 'Načítavam…'; $('discoverList').innerHTML = ''; $('discoverActions').classList.add('hidden');
+  try {
+    const list = await api('/api/discover?' + new URLSearchParams({channel:ch, platform_:$('platform').value, range:$('range').value, limit:30}));
+    $('discoverStatus').textContent = list.length + ' klipov';
+    $('discoverList').innerHTML = list.map((c,i) => `<div><input type="checkbox" class="pick" data-url="${esc(c.url)}" ${i<6?'checked':''}>
+      <img src="${esc(c.thumbnail)}" loading="lazy" onerror="this.style.visibility='hidden'"><div class="grow"><b>${esc(c.title)}</b>
+      <span class="muted">${(c.views||0).toLocaleString()} videní · ${fmtDur(c.duration)}${c.language?' · '+esc(c.language):''}</span></div></div>`).join('');
+    $('discoverActions').classList.toggle('hidden', !list.length);
+  } catch(e) { $('discoverStatus').textContent = '✖ ' + e.message; }
+}
+function addSelected(){
+  const urls = [...document.querySelectorAll('.pick:checked')].map(c => c.dataset.url);
+  const cur = $('urls').value.trim();
+  $('urls').value = (cur ? cur + '\n' : '') + urls.join('\n');
+  tab('links');
+}
+const drop = $('drop');
+drop.onclick = () => $('fileInput').click();
+drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
+drop.ondragleave = () => drop.classList.remove('over');
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); uploadFiles(e.dataTransfer.files); };
+$('fileInput').onchange = e => uploadFiles(e.target.files);
+async function uploadFiles(files){
+  for (const f of files) {
+    drop.textContent = 'Nahrávam ' + f.name + '…';
+    const fd = new FormData(); fd.append('file', f);
+    const r = await fetch('/api/upload', {method:'POST', body:fd});
+    if (r.ok) { const d = await r.json(); const cur = $('urls').value.trim(); $('urls').value = (cur ? cur + '\n' : '') + d.path; }
+    else alert('Nahrávanie zlyhalo: ' + f.name);
+  }
+  drop.textContent = '⬆ Pretiahni sem video súbory z disku, alebo klikni a vyber (pridajú sa do zoznamu)';
+}
+
+// ---------- jobs ----------
+function options(){
+  return { target_length:+$('target').value, layout:$('layout').value, language:$('language').value, look:$('look').value,
+    font:$('font').value, preset:$('preset').value, highlight_color:$('highlight').value, accent_color:$('accent').value,
+    caption_size:+$('capsize').value, music:$('music').value, style_hint:$('style').value,
+    remove_silence:$('jumpcuts').checked, progress_bar:$('progressbar').checked, prefer_portrait:$('portrait').checked };
+}
 async function startJob(){
   const urls = $('urls').value.split('\n').map(s=>s.trim()).filter(Boolean);
-  if (!urls.length) { alert('Vlož aspoň jeden link.'); return; }
-  const options = { target_length: +$('target').value, layout: $('layout').value, language: $('language').value,
-                    font: $('font').value, highlight_color: $('highlight').value, accent_color: $('accent').value,
-                    style_hint: $('style').value };
-  try {
-    const job = await api('/api/jobs', {method:'POST', body:JSON.stringify({urls, options})});
-    watch(job.id);
-  } catch(e) { alert(e.message); }
+  if (!urls.length) { alert('Vlož aspoň jeden link alebo súbor.'); return; }
+  saveOpts();
+  try { const job = await api('/api/jobs', {method:'POST', body:JSON.stringify({urls, options:options()})}); watch(job.id); }
+  catch(e) { alert(e.message); }
 }
-
+async function cancelJob(){ if (current) await api('/api/jobs/' + current + '/cancel', {method:'POST'}); }
 function watch(id){
-  current = id; $('go').disabled = true; $('resultPanel').classList.add('hidden'); $('log').classList.remove('hidden');
+  current = id; $('go').disabled = true; $('cancel').classList.remove('hidden'); $('resultPanel').classList.add('hidden'); $('log').classList.remove('hidden');
   clearInterval(timer); timer = setInterval(poll, 1000); poll();
 }
-
 const stageNames = {download:'Sťahovanie', transcribe:'Prepis a analýza', plan:'Claude plánuje strih', render:'Render'};
 async function poll(){
   if (!current) return;
-  const j = await api('/api/jobs/' + current);
+  let j; try { j = await api('/api/jobs/' + current); } catch(e) { return; }
+  lastJob = j;
   $('bar').style.width = (j.progress*100).toFixed(0) + '%';
   $('stage').textContent = (stageNames[j.stage] || j.stage || '') + (j.status==='queued' ? ' (v rade)' : '');
   $('pct').textContent = j.status==='running' ? (j.progress*100).toFixed(0)+'%' : j.status;
-  $('log').textContent = j.log.join('\n'); $('log').scrollTop = $('log').scrollHeight;
-  $('status').textContent = j.status==='error' ? '✖ ' + j.error : '';
-  renderClips(j.clips);
-  if (j.status==='done' || j.status==='error') {
-    clearInterval(timer); $('go').disabled = false; loadHistory();
-    if (j.status==='done') showResult(j);
+  $('log').textContent = (j.log||[]).join('\n'); $('log').scrollTop = $('log').scrollHeight;
+  $('status').textContent = j.status==='error' ? '✖ ' + j.error : j.status==='cancelled' ? 'zrušené' : '';
+  renderClips(j);
+  if (['done','error','cancelled'].includes(j.status)) {
+    clearInterval(timer); $('go').disabled = false; $('cancel').classList.add('hidden'); loadHistory();
+    if (j.status==='done') showResult(j); else if (j.plan) { $('resultPanel').classList.remove('hidden'); fillPlan(j); }
   }
 }
-
-function renderClips(clips){
-  if (!clips || !clips.length) return;
-  $('clips').innerHTML = clips.map(c => `<div><b>${esc(c.title||c.id)}</b><br>
-    <span class="muted">${esc(c.broadcaster||'')} ${c.game?('· '+esc(c.game)):''} · ${c.duration.toFixed(1)}s · ${c.views?c.views+' views · ':''}${c.words} slov (${c.language}) · ${c.facecam?'facecam ✓':'bez facecam'}</span></div>`).join('');
+function renderClips(j){
+  const clips = j.clips || [];
+  if (!clips.length) return;
+  $('clips').innerHTML = clips.map(c => `<div>
+    <img src="/api/jobs/${j.id}/clips/${c.id}/frame?t=${Math.max(0.5, c.duration/3).toFixed(1)}&w=200" loading="lazy">
+    <div class="grow"><b title="${esc(c.title||c.id)}">${esc(c.title||c.id)}</b>
+      <span class="muted">${esc(c.broadcaster||'')}${c.game?(' · '+esc(c.game)):''} · ${fmtDur(c.duration)} · ${c.views?c.views.toLocaleString()+' videní · ':''}${c.words} slov${c.language?' ('+c.language+')':''}${c.portrait?' · vertikálny':''}</span>
+      <div class="kv">${c.portrait ? 'vertikálny zdroj' : (c.facecam ? 'facecam ✓' : 'bez facecam')} ${c.portrait ? '' : `<button class="secondary small" onclick="editCam('${j.id}','${c.id}')">upraviť facecam</button>`}</div>
+      ${c.text ? `<div class="kv" style="margin-top:4px;opacity:.8">„${esc(c.text.slice(0,140))}${c.text.length>140?'…':''}“</div>` : ''}
+    </div></div>`).join('');
 }
 
+// ---------- result + plan editor ----------
 function showResult(j){
   $('resultPanel').classList.remove('hidden');
   $('video').src = '/api/jobs/' + j.id + '/video?t=' + Date.now();
   $('download').href = '/api/jobs/' + j.id + '/video';
+  $('coverLink').href = '/api/jobs/' + j.id + '/cover'; $('coverLink').classList.toggle('hidden', !j.cover);
   $('outPath').textContent = j.output;
-  $('hook').textContent = j.plan.hook;
-  $('caption').textContent = j.plan.tiktok_caption;
-  $('tags').innerHTML = j.plan.hashtags.map(h => '<span>#' + esc(h) + '</span>').join('');
-  $('planJson').value = JSON.stringify(j.plan, null, 2);
+  fillPlan(j);
   $('resultPanel').scrollIntoView({behavior:'smooth'});
 }
-
+function fillPlan(j){
+  const p = j.plan; if (!p) return;
+  $('hook').value = p.hook; $('caption').value = p.tiktok_caption; $('tags').value = p.hashtags.map(h => '#' + h).join(' ');
+  $('planJson').value = JSON.stringify(p, null, 2);
+  const byId = Object.fromEntries((j.clips||[]).map(c => [c.id, c]));
+  $('planClips').innerHTML = p.clips.map((e, i) => { const c = byId[e.clip_id] || {}; return `<div class="clipcard" data-i="${i}">
+    <div class="head"><input type="checkbox" class="inc" checked> <b title="${esc(c.title||e.clip_id)}">${i+1}. ${esc(c.title||e.clip_id)}</b>
+      <button class="secondary small" onclick="movePlan(${i},-1)">↑</button><button class="secondary small" onclick="movePlan(${i},1)">↓</button></div>
+    <div class="row4" style="margin-top:6px">
+      <div><label>orez začiatok (s)</label><input type="number" class="ts" step="0.1" min="0" value="${e.trim_start}"></div>
+      <div><label>orez koniec (s)</label><input type="number" class="te" step="0.1" min="0" value="${e.trim_end}"></div>
+      <div><label>layout</label><select class="lay"><option value="auto">auto</option><option value="split">facecam+hra</option><option value="blur">blur</option><option value="fill">fill</option></select></div>
+      <div><label>rýchlosť</label><input type="number" class="sp" step="0.05" min="0.5" max="2" value="${e.speed}"></div>
+    </div>
+    <div class="kv" style="margin-top:4px">${fmtDur(c.duration||0)} · ${e.zooms.length} zoomov · ${e.sfx.length} SFX · ${e.shakes.length} otrasov${e.reason?' · '+esc(e.reason):''}</div>
+  </div>`; }).join('');
+  p.clips.forEach((e, i) => { $('planClips').children[i].querySelector('.lay').value = e.layout; });
+}
+function movePlan(i, d){
+  const p = JSON.parse($('planJson').value); const j = i + d; if (j < 0 || j >= p.clips.length) return;
+  collectPlan(p); [p.clips[i], p.clips[j]] = [p.clips[j], p.clips[i]]; $('planJson').value = JSON.stringify(p, null, 2);
+  fillPlan(Object.assign({}, lastJob, {plan:p}));
+}
+function collectPlan(p){
+  p.hook = $('hook').value; p.tiktok_caption = $('caption').value;
+  p.hashtags = $('tags').value.split(/\s+/).map(h => h.replace(/^#/, '')).filter(Boolean);
+  const cards = [...$('planClips').children];
+  p.clips = p.clips.map((e, i) => { const c = cards[i]; if (!c) return e;
+    return Object.assign(e, {_inc: c.querySelector('.inc').checked, trim_start:+c.querySelector('.ts').value, trim_end:+c.querySelector('.te').value, layout:c.querySelector('.lay').value, speed:+c.querySelector('.sp').value}); });
+  return p;
+}
 async function rerender(){
-  let plan;
-  try { plan = JSON.parse($('planJson').value); } catch(e) { alert('Neplatný JSON: ' + e.message); return; }
-  try { await api('/api/jobs/' + current + '/rerender', {method:'POST', body:JSON.stringify(plan)}); watch(current); }
+  const p = collectPlan(JSON.parse($('planJson').value));
+  p.clips = p.clips.filter(e => e._inc !== false); p.clips.forEach(e => delete e._inc);
+  if (!p.clips.length) { alert('Nechaj aspoň jeden klip.'); return; }
+  await submitPlan(p);
+}
+async function rerenderJson(){ let p; try { p = JSON.parse($('planJson').value); } catch(e) { alert('Neplatný JSON: ' + e.message); return; } await submitPlan(p); }
+async function submitPlan(p){
+  try { await api('/api/jobs/' + current + '/rerender', {method:'POST', body:JSON.stringify(p)}); watch(current); }
   catch(e) { alert(e.message); }
 }
+function copyPost(){ navigator.clipboard.writeText($('caption').value + '\n\n' + $('tags').value); }
 
-function copyPost(){
-  const j = $('caption').textContent + '\n\n' + [...$('tags').querySelectorAll('span')].map(s=>s.textContent).join(' ');
-  navigator.clipboard.writeText(j);
+// ---------- facecam editor ----------
+let camState = null;
+async function editCam(jobId, clipId){
+  camClip = {jobId, clipId};
+  const c = (lastJob && lastJob.clips || []).find(x => x.id === clipId) || {};
+  $('camTitle').textContent = c.title || clipId;
+  const img = $('camImg');
+  img.onload = () => { const b = c.facecam || {x:0.02, y:0.02, w:0.25, h:0.25}; placeBox(b); };
+  img.src = `/api/jobs/${jobId}/clips/${clipId}/frame?t=${Math.max(0.5,(c.duration||4)/3).toFixed(1)}&w=560&r=${Date.now()}`;
+  $('camDialog').showModal();
 }
+function placeBox(b){ const img = $('camImg'), box = $('camBox'); box.style.left = b.x*img.clientWidth+'px'; box.style.top = b.y*img.clientHeight+'px'; box.style.width = b.w*img.clientWidth+'px'; box.style.height = b.h*img.clientHeight+'px'; }
+function readBox(){ const img = $('camImg'), box = $('camBox'); return {x:+(box.offsetLeft/img.clientWidth).toFixed(4), y:+(box.offsetTop/img.clientHeight).toFixed(4), w:+(box.offsetWidth/img.clientWidth).toFixed(4), h:+(box.offsetHeight/img.clientHeight).toFixed(4)}; }
+$('camBox').addEventListener('pointerdown', e => {
+  const box = $('camBox'), img = $('camImg'); const resize = e.target.tagName === 'I';
+  camState = {resize, sx:e.clientX, sy:e.clientY, l:box.offsetLeft, t:box.offsetTop, w:box.offsetWidth, h:box.offsetHeight};
+  box.setPointerCapture(e.pointerId); e.preventDefault();
+  box.onpointermove = ev => { if (!camState) return; const dx = ev.clientX-camState.sx, dy = ev.clientY-camState.sy;
+    if (camState.resize) { box.style.width = Math.max(30, Math.min(img.clientWidth-camState.l, camState.w+dx))+'px'; box.style.height = Math.max(30, Math.min(img.clientHeight-camState.t, camState.h+dy))+'px'; }
+    else { box.style.left = Math.max(0, Math.min(img.clientWidth-camState.w, camState.l+dx))+'px'; box.style.top = Math.max(0, Math.min(img.clientHeight-camState.h, camState.t+dy))+'px'; } };
+  box.onpointerup = () => { camState = null; };
+});
+async function saveCam(){ await api(`/api/jobs/${camClip.jobId}/clips/${camClip.clipId}/facecam`, {method:'POST', body:JSON.stringify({box:readBox()})}); $('camDialog').close(); poll(); }
+async function resetCam(){ await api(`/api/jobs/${camClip.jobId}/clips/${camClip.clipId}/facecam`, {method:'POST', body:JSON.stringify({box:null})}); $('camDialog').close(); poll(); }
 
+// ---------- history ----------
 async function loadHistory(){
   const jobs = await api('/api/jobs');
-  $('history').innerHTML = jobs.length ? jobs.map(j => `<div><a href="#" onclick="watch('${j.id}');return false" style="color:inherit">
-    ${j.status==='done'?'✅':j.status==='error'?'✖':'⏳'} ${esc((j.output||'').split(/[\\/]/).pop() || j.urls.length + ' klipov')}</a></div>`).join('') : '–';
+  $('history').innerHTML = jobs.length ? jobs.map(j => `<div style="align-items:center"><span>${j.status==='done'?'✅':j.status==='error'?'✖':j.status==='cancelled'?'⏹':'⏳'}</span>
+    <div class="grow"><a href="#" onclick="watch('${j.id}');return false" style="color:inherit;text-decoration:none"><b>${esc((j.output||'').split(/[\\/]/).pop() || (j.clips.length||j.urls.length) + ' klipov')}</b></a>
+    <span class="muted">${new Date(j.created*1000).toLocaleString('sk-SK')} · ${j.clips.length||j.urls.length} klipov</span></div></div>`).join('') : '–';
 }
-function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
-loadSettings(); loadHistory();
+loadOpts(); loadSettings(); loadHistory(); previewCaptions();
 </script>
 </body>
 </html>

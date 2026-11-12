@@ -19,10 +19,37 @@ heuristikou.
    (JSON validovaný cez Pydantic): poradie, orezy, zoomy, otrasy, SFX, flashe,
    zvýraznené slová, hook, popis a hashtagy.
 5. **FFmpeg** vyrenderuje 1080×1920 video: layout facecam hore / hra dole
-   (alebo rozmazané pozadie), titulky (libass), zoompan efekty, mix SFX,
+   (alebo rozmazané pozadie), jump-cuty ticha, farebný look, titulky (libass),
+   zoompan efekty, mix SFX, hudba na pozadí stíšená pod rečou, progress bar,
    normalizácia hlasitosti na -14 LUFS.
 
-Výstup: `~/.clipper/output/<názov>.mp4` + `<názov>.json` s popisom a hashtagmi.
+Výstup: `~/.clipper/output/<názov>.mp4` + `<názov>.jpg` (cover) +
+`<názov>.json` s popisom a hashtagmi.
+
+## Čo vie
+
+**Vstup**
+- Twitch klipy, Kick klipy, YouTube, súbory z disku (drag & drop do UI).
+- 🔎 *Top klipy streamera*: zadáš meno kanála (Twitch / Kick) a obdobie, vyberieš
+  klipy zo zoznamu s počtom videní.
+- Ak má Twitch klip aj vertikálnu verziu od tvorcu (portrait), použije sa.
+
+**Kvalita videa**
+- Jump-cuty: ticho dlhšie ako ~0,6 s sa vystrihne (momenty s krikom a zoomom sú chránené).
+- Titulky slovo po slove, 4 animácie: *pop* (MrBeast), *karaoke*, *bounce*, *minimal*;
+  3 fonty, farba zvýrazneného slova a dôrazu, živý náhľad v UI.
+- Zoomy, otrasy, flashe a SFX podľa Claude plánu a najhlasnejších momentov.
+- Farebný look: punchy / warm / cold / vintage.
+- Hudba na pozadí z `~/.clipper/music/` so sidechain duckingom pod rečou.
+- Progress bar na spodnom okraji, cover obrázok z najlepšieho momentu.
+- Oddeľovacia linka medzi facecamom a hrou, normalizácia na -14 LUFS.
+
+**UI**
+- Editor facecamu: potiahneš rámček na webkameru, ak ju detekcia netrafila.
+- Editor plánu: poradie klipov, orezy, layout, rýchlosť, hook, popis, hashtagy,
+  plus JSON pre zoomy/SFX. Prerender bez opakovania prepisu.
+- Zrušenie bežiaceho jobu, história po reštarte, test API kľúča,
+  tlačidlo na otvorenie výstupného priečinka, zapamätané nastavenia.
 
 ## Spustenie na Windows
 
@@ -50,7 +77,8 @@ clipper web            # alebo: clipper run <url> <url> --target 45
 ```bash
 clipper doctor                                   # skontroluje ffmpeg, whisper, API kľúč
 clipper settings --set anthropic_api_key=sk-...  # alebo premenná prostredia ANTHROPIC_API_KEY / súbor .env
-clipper run https://clips.twitch.tv/... https://clips.twitch.tv/... --target 45 --layout auto
+clipper discover xqc --range 7d                  # top klipy kanála
+clipper run https://clips.twitch.tv/... https://clips.twitch.tv/... --target 45 --preset karaoke --look warm --music random
 clipper web --port 8787
 ```
 
@@ -83,7 +111,8 @@ clipper/
   transcribe.py   faster-whisper, slová s časom
   media.py        ffprobe, peaky hlasitosti, detekcia facecam (OpenCV YuNet)
   director.py     Claude (structured output -> EditPlan) + heuristická záloha
-  captions.py     ASS titulky slovo po slove
+  silence.py      detekcia ticha + jump-cut remapovanie časov
+  captions.py     ASS titulky slovo po slove (presety pop/karaoke/bounce/minimal)
   sfx.py          syntetizované zvukové efekty
   render.py       FFmpeg filtergraph: layout, zoompan, flash, ass, amix
   pipeline.py     orchestrácia jobov
@@ -95,4 +124,3 @@ clipper/
 
 - Automatický upload na TikTok s popisom a hashtagmi (TikTok Content Posting API vyžaduje schválenú appku).
 - Výber najlepších momentov z celého VOD.
-- Hudba na pozadí.

@@ -61,15 +61,20 @@ class ClipInfo(BaseModel):
     width: int = 0
     height: int = 0
     fps: float = 30.0
+    thumbnail: str = ""
+    portrait: bool = Field(False, description="Source is already vertical (e.g. Twitch's portrait clip asset)")
     transcript: Transcript = Field(default_factory=Transcript)
     peaks: List[Peak] = Field(default_factory=list)
     facecam: Optional[Box] = None
+    silences: List[List[float]] = Field(default_factory=list, description="[start, end] of silent stretches")
 
 
 # --------------------------------------------------------------------------
 # Edit plan (output of the director)
 # --------------------------------------------------------------------------
 Layout = Literal["auto", "split", "blur", "fill"]
+CaptionPreset = Literal["pop", "karaoke", "bounce", "minimal"]
+Look = Literal["none", "punchy", "warm", "cold", "vintage"]
 SfxName = Literal["boom", "whoosh", "ding", "pop", "riser", "record_scratch", "bass_drop"]
 
 
@@ -117,6 +122,7 @@ class ClipEdit(BaseModel):
     sfx: List[SfxCue] = Field(default_factory=list)
     flashes: List[FlashCue] = Field(default_factory=list)
     overlays: List[TextOverlay] = Field(default_factory=list)
+    remove_silence: bool = Field(True, description="Jump-cut silent stretches longer than ~0.6 s inside the clip")
     reason: str = Field("", description="One sentence: why this clip is placed here / cut this way")
 
 
@@ -131,6 +137,7 @@ class CaptionStyle(BaseModel):
     words_per_line: int = Field(3, ge=1, le=5)
     y_position: float = Field(0.68, ge=0.3, le=0.9, description="Vertical centre of the caption block as a fraction of height")
     pop: bool = True
+    preset: CaptionPreset = Field("pop", description="pop: chunk pops in, spoken word highlighted. karaoke: spoken words stay coloured. bounce: each word bounces. minimal: calmer, no uppercase.")
 
 
 class EditPlan(BaseModel):
@@ -142,5 +149,9 @@ class EditPlan(BaseModel):
     clips: List[ClipEdit]
     transition_sfx: Optional[SfxName] = Field("whoosh", description="SFX played on every cut between clips")
     transition_flash: bool = True
-    background_music: bool = False
+    background_music: bool = Field(False, description="Mix a music bed from the user's music folder (auto-ducked under speech)")
+    music_file: str = Field("", description="Specific music file name from the music folder, empty = random")
+    music_volume: float = Field(0.12, ge=0.0, le=1.0)
+    progress_bar: bool = Field(True, description="Thin progress bar at the bottom edge (retention trick)")
+    look: Look = Field("punchy", description="Colour grade applied to the whole video")
     notes: str = ""

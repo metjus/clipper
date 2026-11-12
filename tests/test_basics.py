@@ -45,8 +45,17 @@ def test_sfx_generation(tmp_path, monkeypatch):
 def test_expressions():
     from clipper.models import ClipEdit, ShakeCue, ZoomCue
     e = ClipEdit(clip_id="x", zooms=[ZoomCue(t=1.0, strength=1.3)], shakes=[ShakeCue(t=2.0)])
-    assert "0.300*" in _zoom_expr(e)
+    assert "0.300*" in _zoom_expr(e, lambda t: t)
     assert "random(11)" in _shake_expr(e, 11)
+
+
+def test_silence_remap():
+    from clipper.silence import keep_ranges, remapper, kept_length
+    keeps = keep_ranges(10.0, [(3.0, 4.5), (6.0, 8.0)])
+    assert len(keeps) == 3 and abs(kept_length(keeps) - (10 - 1.22 - 1.72)) < 0.01
+    rm = remapper(keeps)
+    assert rm(1.0) == 1.0 and rm(9.0) < 9.0 and rm(3.5) == rm(3.14)  # inside a cut -> snaps
+    assert keep_ranges(10.0, [(3.0, 4.5)], protect=[3.7]) == [(0.0, 10.0)]
 
 
 @pytest.fixture(scope="module")

@@ -35,6 +35,9 @@ Editing rules:
 - TIKTOK CAPTION: one punchy sentence plus a question or call to comment. HASHTAGS: 5-10, no # sign, mix of streamer, game and generic (fyp, twitch, streamer, gaming, funny...).
 - LANGUAGE: write hook, overlays and caption in the language the streamer speaks in the transcript (field "language"). If the transcript is empty, use the metadata/title language.
 - speed stays 1.0 unless a long boring stretch must be kept for context (then 1.15-1.3).
+- remove_silence (default true) jump-cuts pauses longer than ~0.6 s inside the clip automatically; set it to false only when the silence IS the joke (awkward pause, stare).
+- caption_style.preset: "pop" (default, MrBeast-like), "karaoke" (spoken words stay coloured), "bounce" (every word bounces, hyper), "minimal" (calm, lowercase). Pick what fits the energy.
+- look: "punchy" (default), "warm", "cold", "vintage" or "none".
 - Never invent words that are not in the transcript as emphasis words.
 Return only the JSON."""
 
@@ -182,7 +185,7 @@ def _sanitise(plan: EditPlan, clips: Sequence[ClipInfo]) -> EditPlan:
         total = c.duration or 1.0
         e.trim_start = min(max(0.0, e.trim_start), max(0.0, total - 1.0))
         e.trim_end = min(max(0.0, e.trim_end), max(0.0, total - e.trim_start - 1.0))
-        length = (total - e.trim_start - e.trim_end) / e.speed
+        length = total - e.trim_start - e.trim_end
         inside = lambda t: 0.0 <= t <= length  # noqa: E731
         e.zooms = _dedupe([z for z in e.zooms if inside(z.t)], 0.8)
         e.shakes = [z for z in e.shakes if inside(z.t)]
@@ -197,7 +200,9 @@ def _sanitise(plan: EditPlan, clips: Sequence[ClipInfo]) -> EditPlan:
         if c.id not in seen:
             clean.append(ClipEdit(clip_id=c.id, reason="not placed by planner; appended"))
     plan.clips = clean
-    plan.hashtags = [h.lstrip("#").replace(" ", "") for h in plan.hashtags if h.strip()][:12]
+    seen_tags: set = set()
+    plan.hashtags = [t for t in (h.lstrip("#").replace(" ", "") for h in plan.hashtags if h.strip())
+                     if t and not (t.lower() in seen_tags or seen_tags.add(t.lower()))][:12]
     plan.hook = plan.hook.strip()[:60]
     return plan
 

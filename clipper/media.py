@@ -29,13 +29,31 @@ def probe(path: str | Path) -> dict:
         fps = float(num) / float(den or 1)
     except ZeroDivisionError:
         fps = 30.0
+    width, height = int(v.get("width") or 0), int(v.get("height") or 0)
+    rot = 0
+    for sd in v.get("side_data_list") or []:
+        if "rotation" in sd:
+            rot = int(abs(float(sd["rotation"])))
+    if rot in (90, 270):
+        width, height = height, width
     return {
         "duration": float(data["format"].get("duration") or 0.0),
-        "width": int(v.get("width") or 0),
-        "height": int(v.get("height") or 0),
+        "width": width,
+        "height": height,
         "fps": fps or 30.0,
         "has_audio": a is not None,
     }
+
+
+def frame_jpeg(path: str | Path, t: float = 1.0, width: int = 640) -> bytes:
+    """One frame as JPEG bytes (for the UI)."""
+    s = get_settings()
+    r = subprocess.run(
+        [s.ffmpeg, "-v", "error", "-ss", f"{max(0.0, t):.3f}", "-i", str(path), "-frames:v", "1",
+         "-vf", f"scale={width}:-2", "-f", "image2", "-c:v", "mjpeg", "-q:v", "4", "-"],
+        capture_output=True, check=True,
+    )
+    return r.stdout
 
 
 # --------------------------------------------------------------------------

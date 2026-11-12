@@ -29,6 +29,17 @@ def main(argv=None) -> int:
     r.add_argument("--style", default="", help="free-text style hint for the AI director")
     r.add_argument("--font", default="LuckiestGuy", choices=["LuckiestGuy", "Anton", "Bangers"])
     r.add_argument("--name", default="", help="output file name (without .mp4)")
+    r.add_argument("--preset", default="pop", choices=["pop", "karaoke", "bounce", "minimal"], help="caption animation preset")
+    r.add_argument("--look", default="punchy", choices=["none", "punchy", "warm", "cold", "vintage"], help="colour grade")
+    r.add_argument("--music", default="", help="'random' or a file name from ~/.clipper/music")
+    r.add_argument("--no-progress-bar", action="store_true")
+    r.add_argument("--no-jump-cuts", action="store_true", help="keep silent pauses")
+    r.add_argument("--no-portrait", action="store_true", help="ignore Twitch's vertical clip version")
+
+    d = sub.add_parser("discover", help="list a channel's top clips")
+    d.add_argument("channel", help="Twitch/Kick channel name or URL")
+    d.add_argument("--range", default="7d", choices=["24h", "7d", "30d", "all"])
+    d.add_argument("--limit", type=int, default=20)
 
     st = sub.add_parser("settings", help="show or change settings")
     st.add_argument("--set", action="append", default=[], metavar="KEY=VALUE")
@@ -44,6 +55,12 @@ def main(argv=None) -> int:
         return _settings(args)
     if args.cmd == "doctor":
         return _doctor()
+    if args.cmd == "discover":
+        from .downloader import discover
+
+        for c in discover(args.channel, "twitch", args.range, args.limit, print):
+            print(f"{c['views']:>8} views  {c['duration']:>5.0f}s  {c['title'][:50]:50}  {c['url']}")
+        return 0
     return 0
 
 
@@ -66,7 +83,9 @@ def _run(args) -> int:
     from .pipeline import Job, JobOptions, run_job
 
     opts = JobOptions(target_length=args.target, layout=args.layout, language=args.language,
-                      style_hint=args.style, font=args.font, output_name=args.name)
+                      style_hint=args.style, font=args.font, output_name=args.name, preset=args.preset,
+                      look=args.look, music=args.music, progress_bar=not args.no_progress_bar,
+                      remove_silence=not args.no_jump_cuts, prefer_portrait=not args.no_portrait)
     job = Job(id=time.strftime("cli-%Y%m%d-%H%M%S"), urls=args.urls, options=opts)
     printed = 0
 
